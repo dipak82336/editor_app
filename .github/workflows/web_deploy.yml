@@ -6,12 +6,13 @@ on:
     branches:
       - rich-text-implementation
   
-  # આ લાઈન ઉમેરવાથી "Run workflow" બટન આવી જશે
+  # મેન્યુઅલી રન કરવા માટે બટન
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -20,13 +21,14 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.0'
+          # અહીં વર્ઝન બદલીને નવું કર્યું છે જે તમારા પ્રોજેક્ટ સાથે સુસંગત છે
+          flutter-version: '3.24.3'
 
       - name: Get Dependencies
         run: flutter pub get
 
       - name: Build Web App
-        # તમારા રીપોઝીટરીનું નામ editor_app છે
+        # base-href માં તમારા રીપોઝીટરીનું નામ editor_app છે
         run: flutter build web --release --base-href "/editor_app/"
 
       - name: Deploy to GitHub Pages
