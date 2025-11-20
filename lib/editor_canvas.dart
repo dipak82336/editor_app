@@ -102,9 +102,10 @@ class _EditorCanvasState extends State<EditorCanvas> {
                     _updateCursor(localPoint);
                   },
                   child: GestureDetector(
+                    key: const Key('editor_gesture_detector'),
                     behavior: HitTestBehavior.opaque,
 
-                    onTapDown: (details) {
+                    onTapUp: (details) {
                       final localPoint = _getLocalPoint(
                         context,
                         details.localPosition,
@@ -112,13 +113,13 @@ class _EditorCanvasState extends State<EditorCanvas> {
                       _handleTap(localPoint);
                     },
 
-                    onDoubleTapDown: (details) {
-                      final localPoint = _getLocalPoint(
-                        context,
-                        details.localPosition,
-                      );
-                      _handleDoubleTap(localPoint);
-                    },
+                    // onDoubleTapDown: (details) {
+                    //   final localPoint = _getLocalPoint(
+                    //     context,
+                    //     details.localPosition,
+                    //   );
+                    //   _handleDoubleTap(localPoint);
+                    // },
 
                     onScaleStart: (details) {
                       final localPoint = _getLocalPoint(
@@ -237,6 +238,7 @@ class _EditorCanvasState extends State<EditorCanvas> {
     final halfW = layer.size.width / 2;
     final halfH = layer.size.height / 2;
     final rect = Rect.fromLTRB(-halfW, -halfH, halfW, halfH);
+
     // Body Hit Test માટે થોડું પેડિંગ આપો જેથી પકડવામાં સરળતા રહે
     return rect.inflate(5.0).contains(Offset(point3.x, point3.y));
   }

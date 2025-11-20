@@ -66,7 +66,17 @@ class TextLayer extends BaseLayer {
   });
 
   @override
-  Size get size => _cachedSize;
+  Size get size {
+    if (_cachedSize == Size.zero && text.isNotEmpty) {
+      final textPainter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      _cachedSize = textPainter.size;
+    }
+    return _cachedSize;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
