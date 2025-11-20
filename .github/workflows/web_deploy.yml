@@ -1,14 +1,17 @@
 name: Deploy Flutter Web to GitHub Pages
 
 on:
+  # જ્યારે તમે કોડ પુશ કરો ત્યારે રન થશે
   push:
     branches:
-      - rich-text-implementation  # મહત્વનો ફેરફાર: અહીં તમારી બ્રાન્ચનું નામ લખ્યું છે
+      - rich-text-implementation
+  
+  # આ લાઈન ઉમેરવાથી "Run workflow" બટન આવી જશે
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -23,7 +26,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Web App
-        # અહીં તમારા રીપોઝીટરીનું નામ 'editor_app' છે, તેથી base-href બરાબર છે.
+        # તમારા રીપોઝીટરીનું નામ editor_app છે
         run: flutter build web --release --base-href "/editor_app/"
 
       - name: Deploy to GitHub Pages
