@@ -6,7 +6,7 @@ import 'dart:async';
 import 'models.dart';
 
 // મોબાઈલ માટે ટચ એરિયા મોટો રાખવો પડે (45px જેવો)
-const double TOUCH_TOLERANCE = 60.0;
+const double TOUCH_TOLERANCE = 40.0;
 
 enum HandleType {
   none,
@@ -103,6 +103,7 @@ class _EditorCanvasState extends State<EditorCanvas> {
                   },
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
+                    onTap: () {},
 
                     onTapDown: (details) {
                       final localPoint = _getLocalPoint(
@@ -238,7 +239,8 @@ class _EditorCanvasState extends State<EditorCanvas> {
     final halfH = layer.size.height / 2;
     final rect = Rect.fromLTRB(-halfW, -halfH, halfW, halfH);
     // Body Hit Test માટે થોડું પેડિંગ આપો જેથી પકડવામાં સરળતા રહે
-    return rect.inflate(5.0).contains(Offset(point3.x, point3.y));
+    // Increased to TOUCH_TOLERANCE for better touch handling
+    return rect.inflate(TOUCH_TOLERANCE / 2).contains(Offset(point3.x, point3.y));
   }
 
   // --- 2. Touch Handlers ---

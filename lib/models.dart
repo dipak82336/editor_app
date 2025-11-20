@@ -133,10 +133,6 @@ class TextLayer extends BaseLayer {
 
       _drawDashedRect(canvas, rect, borderPaint);
 
-      // --- FIX HERE: ---
-      // મેં અહીંથી "if (isEditing) return;" લાઈન હટાવી દીધી છે.
-      // હવે હેન્ડલ્સ હંમેશા દોરાશે.
-
       final handleFill = Paint()..color = Colors.white;
       final handleStroke = Paint()
         ..color = Colors.blueAccent

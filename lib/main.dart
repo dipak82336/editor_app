@@ -24,10 +24,11 @@ class EditorPage extends StatefulWidget {
   const EditorPage({super.key});
 
   @override
-  State<EditorPage> createState() => _EditorPageState();
+  State<EditorPage> createState() => EditorPageState();
 }
 
-class _EditorPageState extends State<EditorPage> {
+@visibleForTesting
+class EditorPageState extends State<EditorPage> {
   late EditorComposition composition;
 
   @override
