@@ -1,13 +1,14 @@
 name: Deploy Flutter Web to GitHub Pages
 
 on:
-  # જ્યારે તમે કોડ પુશ કરો ત્યારે રન થશે
   push:
     branches:
       - rich-text-implementation
-  
-  # મેન્યુઅલી રન કરવા માટે બટન
   workflow_dispatch:
+
+# આ નવું સેક્શન ઉમેર્યું છે જે બોટને લખવાની પરમિશન આપશે
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -21,14 +22,12 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          # અહીં વર્ઝન બદલીને નવું કર્યું છે જે તમારા પ્રોજેક્ટ સાથે સુસંગત છે
           flutter-version: '3.24.3'
 
       - name: Get Dependencies
         run: flutter pub get
 
       - name: Build Web App
-        # base-href માં તમારા રીપોઝીટરીનું નામ editor_app છે
         run: flutter build web --release --base-href "/editor_app/"
 
       - name: Deploy to GitHub Pages
