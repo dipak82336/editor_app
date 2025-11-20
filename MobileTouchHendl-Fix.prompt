@@ -1,0 +1,50 @@
+How to Fix Broken Touch Gestures on a Flutter Canvas (Move, Scale, Rotate) for Mobile
+
+..in Flutter where users can manipulate text and image layers using gestures (Pan, Zoom, Rotate). While the logic worked perfectly with a mouse on the Web/Desktop, it failed on Mobile. Touch accuracy was poor, handles were impossible to grab when the object was scaled down, and gestures felt "jerky."
+
+**Here are the 3 specific problems I faced and the mathematical solutions for each:**
+
+#### Problem 1: The "Shrinking Hit Box" Issue
+**The Issue:**
+I was performing hit-tests using `Matrix4.tryInvert()`. I was converting the user's touch point from Global Screen Space into the Layer's Local Space.
+* *Result:* When I scaled a layer down (e.g., `scale = 0.5`), the touch target for the corner handle also scaled down. On mobile, a 20px handle became 10px, making it impossible to touch with a finger.
+
+**The Solution (Global Space Hit Testing):**
+Instead of taking the touch *in*, I projected the handle coordinates *out*.
+1.  Calculate where the handle is in **Local Space** (e.g., `-width/2, -height/2`).
+2.  Use `matrix.transform3()` to convert that exact point to **Global Screen Space**.
+3.  Calculate the distance between the **User's Finger (Global)** and the **Handle (Global)**.
+4.  Use a **fixed constant radius** (e.g., `60px`) for the hit test.
+* *Benefit:* No matter how tiny the text layer is visually, the invisible touch area for the handle remains a large, clickable 60px circle on the screen.
+
+#### Problem 2: The "Body vs. Handle" Conflict
+**The Issue:**
+When a user tried to grab a corner handle, the code often registered it as a "Body Drag" (Move) instead. This happened because the "Body" hit test (checking if a point is inside a rectangle) was returning `true` before the Handle hit test could claim the touch.
+
+**The Solution (Smart Proximity Priority):**
+I rewrote the hit-test logic to be distance-based rather than boolean-based.
+1.  Loop through all handles (Corners + Rotate).
+2.  Calculate the distance to the touch point.
+3.  If a touch is within the "Hit Radius," register it immediately.
+4.  **Only** if no handle is found do we check if the touch is inside the body rectangle.
+* *Benefit:* The handles now have "Z-Index priority" over the move gesture.
+
+#### Problem 3: The "Jumping Object" Scaling
+**The Issue:**
+When scaling (resizing) an object using a corner handle, the object would jump or fly off-screen. This was because I was calculating the scale based on the distance of the touch from the **Screen Center**, not the **Object Center**.
+
+**The Solution (Relative Center Math):**
+I changed the math to calculate the distance vector between the **Touch Point** and the **Layer's Position**.
+* `currentDistance = (touchPoint - layerPosition).distance`
+* `newScale = initialScale * (currentDistance / initialDistance)`
+* *Benefit:* The object now scales strictly from its own anchor point, providing a smooth 1:1 feel on touch screens.
+
+---
+
+### Summary for Developers
+If you are building a gesture system in Flutter:
+1.  **Do not** rely solely on `Matrix4.inverse` for handles; the hit area becomes unstable.
+2.  **Do** project your layer points to Global Coordinates and check Euclidean distance.
+3.  **Always** give corner handles a fixed touch radius (approx 40-60px) that is independent of the layer's scale factor.
+
+***
