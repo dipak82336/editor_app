@@ -65,6 +65,33 @@ class _EditorCanvasState extends State<EditorCanvas> {
     if (activeLayer is TextLayer) {
       final textLayer = activeLayer as TextLayer;
       if (textLayer.text != _textController.text) {
+        // Calculate delta and index
+        final oldText = textLayer.text;
+        final newText = _textController.text;
+        int delta = newText.length - oldText.length;
+
+        // Find insertion/deletion index
+        // This is a bit tricky if not provided by controller, but we can approximate
+        // or use selection. But here we are in a listener, so we just know text changed.
+
+        // Simple delta logic:
+        // If len changed, we assume change happened around cursor or selection.
+        // But syncing indices exactly requires more diff logic.
+        // However, for typing, usually cursor is at the end of change.
+
+        // Let's try to deduce index.
+        int index = 0;
+        // Find first difference
+        int minLen = math.min(oldText.length, newText.length);
+        while (index < minLen && oldText[index] == newText[index]) {
+          index++;
+        }
+
+        // Call shiftIndices before updating text
+        if (delta != 0) {
+             textLayer.shiftIndices(index, delta);
+        }
+
         setState(() {
           textLayer.text = _textController.text;
         });
