@@ -1,0 +1,34 @@
+name: Deploy Flutter Web to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # અથવા 'master', જે તમારી ડિફોલ્ટ બ્રાન્ચ હોય તે અહીં લખો
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          # જો તમારે કોઈ ચોક્કસ વર્ઝન જોઈતું હોય તો અહીં લખી શકો (તમારા પ્રોજેક્ટમાં 3.5.0 છે)
+          flutter-version: '3.19.0' 
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Web App
+        # મહત્વનું: <REPO_NAME> ની જગ્યાએ તમારા GitHub રિપોઝીટરીનું નામ લખો (દા.ત. /editor_app/)
+        run: flutter build web --release --base-href "/<REPO_NAME>/"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
